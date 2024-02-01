@@ -2,8 +2,12 @@
   "name": "oepnv-commute-route-map",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://www.vrr.de/vrr-efa/",
+  "proxy": "http://localhost:8000",
   "dependencies": {
+    "@blueprintjs/core": "^5.8.2",
+    "@blueprintjs/icons": "^5.7.0",
+    "@blueprintjs/select": "^5.0.23",
+    "@maplibre/maplibre-gl-leaflet": "^0.0.20",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -18,7 +22,9 @@
     "react-dom": "^18.2.0",
     "react-leaflet": "^4.2.1",
     "react-scripts": "5.0.1",
+    "sass": "^1.70.0",
     "typescript": "^4.9.5",
+    "usehooks-ts": "^2.10.0",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
@@ -46,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/leaflet": "^1.9.8"
   }
 }
