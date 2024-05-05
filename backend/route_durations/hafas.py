@@ -1,9 +1,10 @@
-from datetime import timedelta, datetime
+from datetime import datetime
 from typing import Optional, List, Dict
 
 from tilenames2 import LatLng
 from util import get_9am_on_next_monday
-import json
+
+from .route_duration_provider import RouteDurationResult
 
 from pyhafas import HafasClient
 from pyhafas.types.fptf import Station
@@ -96,7 +97,7 @@ client = HafasClient(profile, debug=True)
 
 def query_best_route_duration(
     origin_latlng: LatLng, destination_latlng: LatLng
-) -> Optional[timedelta]:
+) -> Optional[RouteDurationResult]:
     origin_station = Station(
         id="", latitude=origin_latlng[0], longitude=origin_latlng[1]
     )
@@ -122,4 +123,11 @@ def query_best_route_duration(
         },
     )
 
-    return min([journey.duration for journey in trip])
+    best_trip_time = min([journey.duration for journey in trip])
+
+    return RouteDurationResult(
+        duration=best_trip_time,
+        x_headers={
+            "x-src": "hafas",
+        },
+    )

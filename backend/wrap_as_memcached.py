@@ -1,6 +1,9 @@
 from pymemcache.client.base import Client
-from route_durations.route_duration_provider import RouteDurationProvider
-from datetime import timedelta
+from route_durations.route_duration_provider import (
+    RouteDurationProvider,
+    RouteDurationResult,
+)
+from datetime import timedelta, datetime, UTC
 from typing import Optional, List, Callable
 import json
 from tilenames2 import LatLng
@@ -29,7 +32,7 @@ def compute_cache_key(
 
 class CacheEntry(BaseModel):
     is_present: bool
-    value: Optional[timedelta]
+    value: Optional[RouteDurationResult]
 
 
 class MemcachedWrapper:
@@ -76,30 +79,38 @@ class MemcachedWrapper:
         @functools.wraps(func)
         def wrapper(
             origin_latlng: LatLng, destination_latlng: LatLng
-        ) -> Optional[timedelta]:
+        ) -> Optional[RouteDurationResult]:
             key = compute_cache_key(prefix, origin_latlng, destination_latlng)
+
+            cache_headers = {}
 
             try:
                 cache_entry = self.memcached_client.get(key, None)
             except:
                 # print("Cache miss (exception)")
                 cache_entry = None
+                cache_headers.update({"x-cache-hit": "exception"})
 
             if cache_entry is not None:
+                cache_headers.update({"x-cache-hit": "true"})
                 try:
                     cache_entry = CacheEntry(**json.loads(cache_entry))
-                    # print("Cache hit")
                 except:
                     # print("Cache hit but invalid value")
                     cache_entry = None
+                    cache_headers.update({"x-cache-value": "err"})
 
             if cache_entry is None:
                 # print("Cache miss")
                 value = func(origin_latlng, destination_latlng)
+                cache_headers.update({"x-cache-computed": "true"})
 
                 if value is None:
                     cache_entry = CacheEntry(is_present=False, value=None)
                 else:
+                    value.x_headers.update(
+                        {"x-cache-computed-at": datetime.now(UTC).isoformat()}
+                    )
                     cache_entry = CacheEntry(is_present=True, value=value)
 
                 self.memcached_client.set(
@@ -109,7 +120,10 @@ class MemcachedWrapper:
                 )
 
             if cache_entry.is_present:
-                return cache_entry.value
+                # print("Cache present", cache_entry)
+                value = cache_entry.value
+                value.x_headers.update(cache_headers)
+                return value
 
             return None
 

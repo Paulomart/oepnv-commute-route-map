@@ -7,6 +7,7 @@ from clients.vrr_api import (
     get_best_journey_time_from_trip,
 )
 from util import get_9am_on_next_monday
+from .route_duration_provider import RouteDurationResult
 
 
 def query_best_route_duration(
@@ -18,4 +19,11 @@ def query_best_route_duration(
         departure_datetime=get_9am_on_next_monday(),
     )
 
-    return get_best_journey_time_from_trip(trip)
+    best_trip_time = get_best_journey_time_from_trip(trip)
+
+    return RouteDurationResult(
+        duration=best_trip_time,
+        x_headers={
+            "x-src": "vrr",
+        },
+    )

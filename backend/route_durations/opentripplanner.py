@@ -8,6 +8,8 @@ from clients.opentripplanner_api import (
 )
 from util import get_9am_on_next_monday
 
+from .route_duration_provider import RouteDurationResult
+
 
 def query_best_route_duration(
     origin_latlng: LatLng, destination_latlng: LatLng
@@ -18,4 +20,11 @@ def query_best_route_duration(
         departure_datetime=get_9am_on_next_monday(),
     )
 
-    return get_best_journey_time_from_plan(trip)
+    best_trip_time = get_best_journey_time_from_plan(trip)
+
+    return RouteDurationResult(
+        duration=best_trip_time,
+        x_headers={
+            "x-src": "otp",
+        },
+    )

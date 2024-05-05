@@ -62,17 +62,20 @@ def generate_random_noice_tile_image(
         raise Exception("Unknown src")
 
     provider = route_duration_providers[src]
-    best_journey_time = provider(
+    route_duration_result = provider(
         origin_latlng,
         center_latlng,
     )
 
-    image = render_tile(tile_size, best_journey_time)
+    image = render_tile(tile_size, route_duration_result.duration)
 
     return Response(
         content=image,
         media_type="image/png",
-        headers={"Cache-Control": "max-age=86400"},
+        headers={
+            "Cache-Control": "public, max-age=86400",
+            **route_duration_result.x_headers,
+        },
     )
 
 
