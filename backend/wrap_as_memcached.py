@@ -86,8 +86,9 @@ class MemcachedWrapper:
 
             try:
                 cache_entry = self.memcached_client.get(key, None)
-            except:
-                # print("Cache miss (exception)")
+            except Exception as e:
+                print("Cache miss (exception)")
+                print(e)
                 cache_entry = None
                 cache_headers.update({"x-cache-hit": "exception"})
 
