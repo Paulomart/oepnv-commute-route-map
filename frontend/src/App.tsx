@@ -121,7 +121,7 @@ export type TestProps = {
 
 function Test({destinationLocation, dataSource, onViewChanged, bounds}: TestProps): JSX.Element {
   const coords: [number, number] = destinationLocation.coord as any;
-  const [map, setMap] = useState<null | L.Map>(null)
+  const [map, setMap] = useState<null | L.Map>(null);
 
   const onMove = useCallback(() => {
     if (!map) {
@@ -149,7 +149,7 @@ function Test({destinationLocation, dataSource, onViewChanged, bounds}: TestProp
     map.on('move', onMove);
 
     return () => {
-      map.off('move', onMove)
+      map.off('move', onMove);
     };
   }, [map, onMove]);
 

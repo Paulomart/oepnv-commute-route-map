@@ -1,11 +1,11 @@
-from typing import Callable
+from typing import Callable, Optional
 from datetime import timedelta
 from dataclasses import dataclass
 from pydantic import BaseModel
 
 
 class RouteDurationResult(BaseModel):
-    duration: timedelta
+    duration: Optional[timedelta]
     x_headers: dict[str, str]
 
 

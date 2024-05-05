@@ -67,7 +67,11 @@ def generate_random_noice_tile_image(
         center_latlng,
     )
 
-    image = render_tile(tile_size, route_duration_result.duration)
+    mark_as_new_tile = "x-cache-computed" in route_duration_result.x_headers
+
+    image = render_tile(
+        tile_size, route_duration_result.duration, mark_as_new_tile=mark_as_new_tile
+    )
 
     return Response(
         content=image,

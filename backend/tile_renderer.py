@@ -30,12 +30,17 @@ def calculate_color(percent):
     return (red, green, blue)
 
 
-def render_tile(tile_size: int, best_journey_time: Optional[timedelta]) -> bytes:
+def render_tile(
+    tile_size: int, best_journey_time: Optional[timedelta], mark_as_new_tile=False
+) -> bytes:
     color = minute_to_color(best_journey_time)
 
     best_journey_time_text = "N/A"
     if best_journey_time is not None:
         best_journey_time_text = f"{int(best_journey_time.total_seconds() / 60)} min"
+
+    if mark_as_new_tile:
+        best_journey_time_text = best_journey_time_text + "*"
 
     color = (int(color[0]), int(color[1]), int(color[2]), 255)
 
